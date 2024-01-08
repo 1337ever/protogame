@@ -8,6 +8,7 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     object::ObjectBundle,
     PlayerAimingEvent,
+    SCALE_FACTOR,
 };
 
 #[derive(Bundle, Default)]

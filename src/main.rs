@@ -20,7 +20,7 @@ use gun::{
     GunBundle,
 };
 
-const SCALE_FACTOR: f32 = 50.;
+pub const SCALE_FACTOR: f32 = 50.;
 
 fn main() {
     App::new()
