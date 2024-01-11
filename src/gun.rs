@@ -8,6 +8,8 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     object::ObjectBundle,
     PlayerAimingEvent,
+    projectile::{Bullet, BulletBundle},
+    hands::InHand,
     SCALE_FACTOR,
 };
 

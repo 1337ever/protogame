@@ -1,5 +1,7 @@
 use bevy::prelude::*;
-use crate::{Player};
+use crate::{
+    player::Player,
+};
 
 //code here stolen from/based on https://github.com/mwbryant/logic-ss13-roguelike/blob/master/src/hands.rs
 
@@ -13,6 +15,9 @@ pub struct Hands {
     pub hands: Vec<Hand>,
     pub active: Option<usize>,
 }
+
+#[derive(Component)]
+pub struct InHand; //marker component for things in the player's hands
 
 #[derive(Event)]
 pub struct GiveItem {
@@ -70,7 +75,7 @@ impl Hands {
 
     pub fn can_pickup(&self) -> bool {
         self.active
-            .and_then(|idx| self.hands.get_mut(idx))
+            .and_then(|idx| self.hands.get(idx))
             .map(|hand| hand.holding.is_none())
             .unwrap_or(false)
     }

@@ -6,8 +6,8 @@ use crate::object::ObjectBundle;
 
 #[derive(Bundle, Default)]
 pub struct BulletBundle {
-    obj_bundle: ObjectBundle,
-    bullet: Bullet,
+    pub obj_bundle: ObjectBundle,
+    pub bullet: Bullet,
 }
 //9mm bullet length: 10.54mm
 //width: 9.65mm
