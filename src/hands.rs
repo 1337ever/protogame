@@ -1,7 +1,5 @@
+use crate::player::Player;
 use bevy::prelude::*;
-use crate::{
-    player::Player,
-};
 
 //code here stolen from/based on https://github.com/mwbryant/logic-ss13-roguelike/blob/master/src/hands.rs
 
@@ -38,8 +36,7 @@ pub fn handle_give_item(
                 return;
             }
             if items.contains(ev.item) {
-                commands
-                    .entity(ev.item);
+                commands.entity(ev.item);
                 receiver.pickup(ev.item);
             }
         }
@@ -48,7 +45,7 @@ pub fn handle_give_item(
 
 impl Hands {
     pub fn swap_active(&mut self) {
-        self.active = self.active.map(|index| (index+1) % self.hands.len());
+        self.active = self.active.map(|index| (index + 1) % self.hands.len());
     }
     pub fn get_active(&self) -> Option<&Hand> {
         self.active.map(|index| &self.hands[index])

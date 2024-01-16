@@ -4,7 +4,8 @@ use bevy_rapier2d::prelude::*;
 #[derive(Component, Default)]
 pub struct Object;
 #[derive(Bundle)]
-pub struct ObjectBundle {//bundle for physical objects in the world (most things)
+pub struct ObjectBundle {
+    //bundle for physical objects in the world (most things)
     marker: Object,
     body: RigidBody,
     velocity: Velocity,
@@ -21,10 +22,13 @@ impl Default for ObjectBundle {
             marker: Object,
             body: RigidBody::Dynamic,
             velocity: Velocity::zero(),
-            collider: Collider::cuboid(size_x/2., size_y/2.),
+            collider: Collider::cuboid(size_x / 2., size_y / 2.),
             mass_properties: ColliderMassProperties::Density(1.0),
             ext_impulse: ExternalImpulse::default(),
-            damping: Damping { linear_damping: 1., angular_damping: 1. },
+            damping: Damping {
+                linear_damping: 1.,
+                angular_damping: 1.,
+            },
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     color: Color::RED,
@@ -32,21 +36,20 @@ impl Default for ObjectBundle {
                     ..Default::default()
                 },
                 ..Default::default()
-            }
+            },
         }
     }
 }
 impl ObjectBundle {
     pub fn new(pos: Vec2, size: Vec2, density: Option<f32>) -> Self {
-
         //optionally specify the density of the object
         let mass_prop = match density {
             None => ColliderMassProperties::Density(1.0),
-            Some(density) => ColliderMassProperties::Density(density)
+            Some(density) => ColliderMassProperties::Density(density),
         };
 
-        ObjectBundle{
-            sprite_bundle: SpriteBundle{
+        ObjectBundle {
+            sprite_bundle: SpriteBundle {
                 sprite: Sprite {
                     custom_size: Some(size),
                     ..Default::default()
@@ -54,7 +57,7 @@ impl ObjectBundle {
                 transform: Transform::from_xyz(pos.x, pos.y, 0.),
                 ..default()
             },
-            collider: Collider::cuboid(size.x/2., size.y/2.),
+            collider: Collider::cuboid(size.x / 2., size.y / 2.),
             mass_properties: mass_prop,
             ..default()
         }

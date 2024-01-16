@@ -3,7 +3,6 @@ use bevy_rapier2d::prelude::*;
 
 use crate::object::ObjectBundle;
 
-
 #[derive(Bundle, Default)]
 pub struct BulletBundle {
     pub obj_bundle: ObjectBundle,

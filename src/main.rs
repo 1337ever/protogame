@@ -1,37 +1,23 @@
 use bevy::{
-    prelude::*,
-    window::{WindowResolution, PrimaryWindow},
     math::Vec3Swizzles,
+    prelude::*,
+    window::{PrimaryWindow, WindowResolution},
 };
-use bevy_rapier2d::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_rapier2d::prelude::*;
 
-pub mod hands;
 pub mod gun;
-pub mod projectile;
+pub mod hands;
 pub mod object;
 pub mod player;
+pub mod projectile;
 
+use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
-use gun::{
-    Gun,
-    gun_aiming,
-    GunBundle,
-    shoot,
-};
 
-use hands::{
-    InHand,
-    handle_give_item,
-    GiveItem,
-};
+use hands::{handle_give_item, GiveItem, InHand};
 
-use player::{
-    spawn_player,
-    player_movement,
-    player_aiming,
-    PlayerAimingEvent,
-};
+use player::{player_aiming, player_controls, spawn_player, PlayerAimingEvent};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -51,14 +37,14 @@ fn main() {
         ))
         .add_systems(Startup, (spawn_player))
         .add_systems(
-            Update, 
+            Update,
             (
-                        player_movement, 
-                        player_aiming, 
-                        gun_aiming, 
-                        handle_give_item,
-                        shoot
-                    )
+                player_controls,
+                player_aiming,
+                gun_aiming,
+                handle_give_item,
+                shoot,
+            ),
         )
         .add_event::<PlayerAimingEvent>()
         .add_event::<GiveItem>()
@@ -70,6 +56,7 @@ fn main() {
 #[derive(Component, Default)]
 struct Item;
 #[derive(Bundle, Default)]
-struct ItemBundle { //bundle for things that can be picked up
+struct ItemBundle {
+    //bundle for things that can be picked up
     obj_bundle: ObjectBundle,
 }
