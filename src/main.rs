@@ -17,7 +17,7 @@ use object::ObjectBundle;
 
 use hands::{handle_give_item, GiveItem, InHand};
 
-use player::{player_aiming, player_controls, spawn_player, PlayerAimingEvent};
+use player::{player_aiming, player_movement, spawn_player, PlayerAimingEvent};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -39,7 +39,7 @@ fn main() {
         .add_systems(
             Update,
             (
-                player_controls,
+                player_movement,
                 player_aiming,
                 gun_aiming,
                 handle_give_item,

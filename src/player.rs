@@ -68,34 +68,19 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
     //manually join the gun to the player (in the future this should be done with a pickup/inv system)
 }
 
-pub fn player_controls(
+pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    buttons: Res<Input<MouseButton>>,
     mut player_info: Query<(&Player, &mut ExternalImpulse)>,
     mut commands: Commands,
-    mut ev_playeraiming: EventWriter<PlayerAimingEvent>,
+    mut ev_playeraiming: EventReader<PlayerAimingEvent>,
     //time_step: Res<FixedTime>,
 ) {
     for (player, mut ext_impulse) in &mut player_info {
         //TODO: make player travel faster if they're moving in the direction they're pointing
         //TODO: if not aiming, movement keys should rotate player in direction of travel
-        
-        //fucked up logic will result in input lags and mismatches i think
-        if buttons.pressed(MouseButton::Right) {
-            ev_playeraiming.send(PlayerAimingEvent(true));
-            if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
-                ext_impulse.impulse.y += 100.0;
-            }
-            if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
-                ext_impulse.impulse.y -= 100.0;
-            }
-            if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
-                ext_impulse.impulse.x += 100.0;
-            }
-            if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
-                ext_impulse.impulse.x -= 100.0;
-            }
-        } else {
+
+        //if player not aiming, this might be fucked
+        if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
                 ext_impulse.impulse.y += 100.0;
             }
@@ -110,32 +95,49 @@ pub fn player_controls(
             }
         }
 
-        
-        if buttons.just_released(MouseButton::Right) {
-            //this does not work as intended, this event is read as identical
-            //to a PlayerAimingEvent(true)
-            ev_playeraiming.send(PlayerAimingEvent(false))
-        }
+        //no read() in this function, so event buffer must be manually cleared to
+        //re-enable movement after aiming button released
+        ev_playeraiming.clear();
+        /* 
+        for ev in ev_playeraiming.read() {
+            if ev.0 == false { //this never fires!!! bug!!!
+                if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
+                    ext_impulse.impulse.y += 100.0;
+                }
+                if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
+                    ext_impulse.impulse.y -= 100.0;
+                }
+                if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
+                    ext_impulse.impulse.x += 100.0;
+                }
+                if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
+                    ext_impulse.impulse.x -= 100.0;
+                }
+            }
+        }*/
     }
 }
 
-#[derive(Event)]
+#[derive(Event, Debug)]
 pub struct PlayerAimingEvent(pub bool);
 
 pub fn player_aiming(
+    buttons: Res<Input<MouseButton>>,
     mut player_data: Query<(
         &mut Player,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
     )>,
-    mut ev_playeraiming: EventReader<PlayerAimingEvent>,
+    mut ev_playeraiming: EventWriter<PlayerAimingEvent>,
     //time_step: Res<FixedTime>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
     for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
-        for ev in ev_playeraiming.read() {
+        if buttons.pressed(MouseButton::Right) {
+            ev_playeraiming.send(PlayerAimingEvent(true));
+
             //surely this .single will never have to be changed
             let (camera, camera_transform) = camera_q.single();
 
@@ -172,6 +174,9 @@ pub fn player_aiming(
 
                 ext_impulse.torque_impulse = rotation_sign;
             }
+        }
+        if buttons.just_released(MouseButton::Right) {
+            ev_playeraiming.send(PlayerAimingEvent(false))
         }
     }
 }
