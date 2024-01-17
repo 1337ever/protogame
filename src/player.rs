@@ -77,20 +77,17 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
 pub fn player_movement(
     //monstrosity
     keyboard_input: Res<Input<KeyCode>>,
-    camera_q: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window, With<PrimaryWindow>>,
     mut player_data: Query<(
-        &mut Player,
+        With<Player>,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
     )>,
-    mut commands: Commands,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
     mut ev_playerpoint: EventWriter<PlayerPointEvent>,
     //time_step: Res<FixedTime>,
 ) {
-    for (player, mut ext_impulse, player_trans, _) in &mut player_data {
+    for (_, mut ext_impulse, player_trans, _) in &mut player_data {
         //TODO: make player travel faster if they're moving in the direction they're pointing
         //TODO: if not aiming, movement keys should rotate player in direction of travel
 
@@ -154,7 +151,7 @@ pub struct PlayerAimingEvent(pub bool);
 pub fn player_aiming(
     buttons: Res<Input<MouseButton>>,
     mut player_data: Query<(
-        &mut Player,
+        With<Player>,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
@@ -164,7 +161,7 @@ pub fn player_aiming(
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
+    for (_, mut ext_impulse, player_trans, _) in &mut player_data {
         if buttons.pressed(MouseButton::Right) {
             ev_playeraiming.send(PlayerAimingEvent(true));
 
@@ -216,19 +213,16 @@ pub struct PlayerPointEvent(pub Vec2);
 
 //generalized system to point the player at some position
 pub fn point_player(
-    camera_q: Query<(&Camera, &GlobalTransform)>,
-    windows: Query<&Window, With<PrimaryWindow>>,
     //vvvv Takes in coordinate to point to via event
     mut ev_playerpoint: EventReader<PlayerPointEvent>,
     mut player_data: Query<(
-        &mut Player,
+        With<Player>,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
     )>,
 ) {
-    for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
-        let (camera, camera_transform) = camera_q.single();
+    for (_, mut ext_impulse, player_trans, _) in &mut player_data {
         for ev in ev_playerpoint.read() {
             //https://github.com/bevyengine/bevy/blob/main/examples/2d/rotation.rs for reference on the following code
             let player_pos = player_trans.translation.xy();
