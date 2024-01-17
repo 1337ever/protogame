@@ -17,7 +17,7 @@ use object::ObjectBundle;
 
 use hands::{handle_give_item, GiveItem, InHand};
 
-use player::{player_aiming, player_movement, spawn_player, PlayerAimingEvent};
+use player::{player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -41,12 +41,14 @@ fn main() {
             (
                 player_movement,
                 player_aiming,
+                point_player,
                 gun_aiming,
                 handle_give_item,
                 shoot,
             ),
         )
         .add_event::<PlayerAimingEvent>()
+        .add_event::<PlayerPointEvent>()
         .add_event::<GiveItem>()
         .add_plugins(WorldInspectorPlugin::new())
         //.insert_resource(FixedTime::new_from_secs(1.0 / 165.0))

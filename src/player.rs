@@ -1,10 +1,11 @@
 use bevy::{ecs::system::RunSystemOnce, prelude::*};
+use bevy_inspector_egui::egui::PlatformOutput;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
     gun::{Gun, GunBundle},
     hands::Hands,
-    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
+    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, World,
 };
 
 // This should be turned into a bundle
@@ -69,19 +70,32 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
 }
 
 pub fn player_movement(
+    //monstrosity
     keyboard_input: Res<Input<KeyCode>>,
-    mut player_info: Query<(&Player, &mut ExternalImpulse)>,
+    camera_q: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window, With<PrimaryWindow>>,
+    mut player_data: Query<(
+        &mut Player,
+        &mut ExternalImpulse,
+        &Transform,
+        With<RigidBody>,
+    )>,
     mut commands: Commands,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
+    mut ev_playerpoint: EventWriter<PlayerPointEvent>,
+    mut world: World,
     //time_step: Res<FixedTime>,
 ) {
-    for (player, mut ext_impulse) in &mut player_info {
+    for (player, mut ext_impulse, player_trans, _) in &mut player_data {
         //TODO: make player travel faster if they're moving in the direction they're pointing
         //TODO: if not aiming, movement keys should rotate player in direction of travel
 
         //if player not aiming, this might be fucked
         if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
+                let point_spot = Vec2{x: player_trans.translation.y-10., y: player_trans.translation.x};
+                //world.run_system_once(point_player(camera_q, windows, player_data, point_spot));
+                ev_playerpoint.send(PlayerPointEvent(point_spot));
                 ext_impulse.impulse.y += 100.0;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
@@ -181,9 +195,12 @@ pub fn player_aiming(
     }
 }
 
+#[derive(Event, Debug)]
+pub struct PlayerPointEvent(pub Vec2);
+
 //generalized function to point the player at some position
-fn point_player(
-    camera_q: Query<&Camera, &GlobalTransform>,
+pub fn point_player(
+    camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
     mut player_data: Query<(
         &mut Player,
@@ -191,6 +208,39 @@ fn point_player(
         &Transform,
         With<RigidBody>,
     )>,
+    //world_position: Vec2, //input of world position to turn towards
+    mut ev_playerpoint: EventReader<PlayerPointEvent>,
 ) {
-    for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {}
+    for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
+        let (camera, camera_transform) = camera_q.single();
+        for ev in ev_playerpoint.read() {
+
+            //https://github.com/bevyengine/bevy/blob/main/examples/2d/rotation.rs for reference on the following code
+            let player_pos = player_trans.translation.xy();
+
+            let player_forward = (player_trans.rotation * Vec3::Y).xy();
+
+            //vector from player to mouse
+            let to_mouse = (ev.0 - player_pos).normalize();
+
+            //get dot product between player forward vector and direction to the mouse
+            let forward_dot_mouse = player_forward.dot(to_mouse);
+
+            //if player is already facing mouse
+            if (forward_dot_mouse - 1.0).abs() < f32::EPSILON {
+                continue;
+            }
+
+            //get right vector of player
+            let player_right = (player_trans.rotation * Vec3::X).xy();
+
+            //if negative, rotate CCW, if positive rotate CW
+            let right_dot_mouse = player_right.dot(to_mouse);
+
+            let rotation_sign = -f32::copysign(0.1, right_dot_mouse);
+
+            ext_impulse.torque_impulse = rotation_sign;
+        }
+    }
+
 }

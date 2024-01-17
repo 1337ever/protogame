@@ -16,7 +16,7 @@ pub struct Hands {
 
 #[derive(Component)]
 pub struct InHand; //marker component for things in the player's hands
-//probably get rid of this
+                   //probably get rid of this
 
 #[derive(Event)]
 pub struct GiveItem {
