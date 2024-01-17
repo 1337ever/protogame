@@ -7,10 +7,12 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 
 pub mod gun;
-pub mod hands;
 pub mod object;
 pub mod player;
+pub mod hands;
+pub mod legs;
 pub mod projectile;
+
 
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;

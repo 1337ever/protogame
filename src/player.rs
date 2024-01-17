@@ -1,11 +1,10 @@
 use bevy::prelude::*;
-use bevy_inspector_egui::egui::PlatformOutput;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
     gun::{Gun, GunBundle},
     hands::Hands,
-    InHand, Item, ObjectBundle, PrimaryWindow, World, SCALE_FACTOR,
+    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, legs::Legs,
 };
 
 // This should be turned into a bundle
@@ -43,6 +42,7 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
                 angular_damping: 3.,
             },
             Hands::human_hands(), //i got hands! wow!
+            Legs::human_flesh_legs(), //wowee, legs!
         ))
         .id();
 
@@ -79,6 +79,7 @@ pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player_data: Query<(
         With<Player>,
+        &Legs,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
@@ -87,10 +88,12 @@ pub fn player_movement(
     mut ev_playerpoint: EventWriter<PlayerPointEvent>,
     //time_step: Res<FixedTime>,
 ) {
-    for (_, mut ext_impulse, player_trans, _) in &mut player_data {
+    for (_, legs, mut ext_impulse, player_trans, _) in &mut player_data {
         //TODO: make player travel faster if they're moving in the direction they're pointing
         //TODO: if not aiming, movement keys should rotate player in direction of travel
 
+        let linear_motility = legs.get_walk();
+        let angular_motility = legs.get_agility();
         //if player not aiming, this might be fucked
         if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
@@ -98,45 +101,45 @@ pub fn player_movement(
                     x: player_trans.translation.x,
                     y: player_trans.translation.y + 10.,
                 };
-                ev_playerpoint.send(PlayerPointEvent(point_spot));
-                ext_impulse.impulse.y += 100.0;
+                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ext_impulse.impulse.y += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
                 let point_spot = Vec2 {
                     x: player_trans.translation.x,
                     y: player_trans.translation.y - 10.,
                 };
-                ev_playerpoint.send(PlayerPointEvent(point_spot));
-                ext_impulse.impulse.y -= 100.0;
+                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ext_impulse.impulse.y -= linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
                 let point_spot = Vec2 {
                     x: player_trans.translation.x + 10.0,
                     y: player_trans.translation.y,
                 };
-                ev_playerpoint.send(PlayerPointEvent(point_spot));
-                ext_impulse.impulse.x += 100.0;
+                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ext_impulse.impulse.x += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
                 let point_spot = Vec2 {
                     x: player_trans.translation.x - 10.0,
                     y: player_trans.translation.y,
                 };
-                ev_playerpoint.send(PlayerPointEvent(point_spot));
-                ext_impulse.impulse.x -= 100.0;
+                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ext_impulse.impulse.x -= linear_motility;
             }
         } else {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
-                ext_impulse.impulse.y += 100.0;
+                ext_impulse.impulse.y += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
-                ext_impulse.impulse.y -= 100.0;
+                ext_impulse.impulse.y -= linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
-                ext_impulse.impulse.x += 100.0;
+                ext_impulse.impulse.x += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
-                ext_impulse.impulse.x -= 100.0;
+                ext_impulse.impulse.x -= linear_motility;
             }
             //no read() in this function, so event buffer must be manually cleared to
             //re-enable movement after aiming button released
@@ -209,7 +212,10 @@ pub fn player_aiming(
 }
 
 #[derive(Event, Debug)]
-pub struct PlayerPointEvent(pub Vec2);
+pub struct PlayerPointEvent{
+    pub point: Vec2,
+    pub speed: f32,
+}
 
 //generalized system to point the player at some position
 pub fn point_player(
@@ -230,7 +236,7 @@ pub fn point_player(
             let player_forward = (player_trans.rotation * Vec3::Y).xy();
 
             //vector from player to mouse
-            let to_mouse = (ev.0 - player_pos).normalize();
+            let to_mouse = (ev.point - player_pos).normalize();
 
             //get dot product between player forward vector and direction to the mouse
             let forward_dot_mouse = player_forward.dot(to_mouse);
