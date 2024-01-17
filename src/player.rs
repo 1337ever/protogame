@@ -1,11 +1,11 @@
-use bevy::{prelude::*};
+use bevy::prelude::*;
 use bevy_inspector_egui::egui::PlatformOutput;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
     gun::{Gun, GunBundle},
     hands::Hands,
-    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, World,
+    InHand, Item, ObjectBundle, PrimaryWindow, World, SCALE_FACTOR,
 };
 
 // This should be turned into a bundle
@@ -69,6 +69,11 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
     //manually join the gun to the player (in the future this should be done with a pickup/inv system)
 }
 
+
+//TODO: make this a player controls system that also handles mouse inputs
+//send events for both keyboard movement and mouse aiming, to cut down on number of systems
+//trying to access the same stuff at the same time.
+//also stop hardcoding so many things
 pub fn player_movement(
     //monstrosity
     keyboard_input: Res<Input<KeyCode>>,
@@ -92,9 +97,39 @@ pub fn player_movement(
         //if player not aiming, this might be fucked
         if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
-                let point_spot = Vec2{x: player_trans.translation.y-10., y: player_trans.translation.x};
-                //world.run_system_once(point_player(camera_q, windows, player_data, point_spot));
+                let point_spot = Vec2 {
+                    x: player_trans.translation.x,
+                    y: player_trans.translation.y + 10.,
+                };
                 ev_playerpoint.send(PlayerPointEvent(point_spot));
+                ext_impulse.impulse.y += 100.0;
+            }
+            if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
+                let point_spot = Vec2 {
+                    x: player_trans.translation.x,
+                    y: player_trans.translation.y - 10.,
+                };
+                ev_playerpoint.send(PlayerPointEvent(point_spot));
+                ext_impulse.impulse.y -= 100.0;
+            }
+            if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
+                let point_spot = Vec2 {
+                    x: player_trans.translation.x + 10.0,
+                    y: player_trans.translation.y,
+                };
+                ev_playerpoint.send(PlayerPointEvent(point_spot));
+                ext_impulse.impulse.x += 100.0;
+            }
+            if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
+                let point_spot = Vec2 {
+                    x: player_trans.translation.x - 10.0,
+                    y: player_trans.translation.y,
+                };
+                ev_playerpoint.send(PlayerPointEvent(point_spot));
+                ext_impulse.impulse.x -= 100.0;
+            }
+        } else {
+            if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
                 ext_impulse.impulse.y += 100.0;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
@@ -106,28 +141,10 @@ pub fn player_movement(
             if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
                 ext_impulse.impulse.x -= 100.0;
             }
+            //no read() in this function, so event buffer must be manually cleared to
+            //re-enable movement after aiming button released
+            ev_playeraiming.clear();
         }
-
-        //no read() in this function, so event buffer must be manually cleared to
-        //re-enable movement after aiming button released
-        ev_playeraiming.clear();
-        /* 
-        for ev in ev_playeraiming.read() {
-            if ev.0 == false { //this never fires!!! bug!!!
-                if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
-                    ext_impulse.impulse.y += 100.0;
-                }
-                if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
-                    ext_impulse.impulse.y -= 100.0;
-                }
-                if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
-                    ext_impulse.impulse.x += 100.0;
-                }
-                if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
-                    ext_impulse.impulse.x -= 100.0;
-                }
-            }
-        }*/
     }
 }
 
@@ -197,12 +214,12 @@ pub fn player_aiming(
 #[derive(Event, Debug)]
 pub struct PlayerPointEvent(pub Vec2);
 
-//generalized function to point the player at some position
+//generalized system to point the player at some position
 pub fn point_player(
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
+    //vvvv Takes in coordinate to point to via event
     mut ev_playerpoint: EventReader<PlayerPointEvent>,
-    //world_position: Vec2, //input of world position to turn towards
     mut player_data: Query<(
         &mut Player,
         &mut ExternalImpulse,
@@ -213,7 +230,6 @@ pub fn point_player(
     for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
         let (camera, camera_transform) = camera_q.single();
         for ev in ev_playerpoint.read() {
-
             //https://github.com/bevyengine/bevy/blob/main/examples/2d/rotation.rs for reference on the following code
             let player_pos = player_trans.translation.xy();
 
@@ -241,5 +257,4 @@ pub fn point_player(
             ext_impulse.torque_impulse = rotation_sign;
         }
     }
-
 }

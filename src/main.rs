@@ -17,7 +17,9 @@ use object::ObjectBundle;
 
 use hands::{handle_give_item, GiveItem, InHand};
 
-use player::{player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent};
+use player::{
+    player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent,
+};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
