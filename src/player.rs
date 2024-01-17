@@ -1,4 +1,4 @@
-use bevy::{ecs::system::RunSystemOnce, prelude::*};
+use bevy::{prelude::*};
 use bevy_inspector_egui::egui::PlatformOutput;
 use bevy_rapier2d::prelude::*;
 
@@ -83,7 +83,6 @@ pub fn player_movement(
     mut commands: Commands,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
     mut ev_playerpoint: EventWriter<PlayerPointEvent>,
-    mut world: World,
     //time_step: Res<FixedTime>,
 ) {
     for (player, mut ext_impulse, player_trans, _) in &mut player_data {
@@ -202,14 +201,14 @@ pub struct PlayerPointEvent(pub Vec2);
 pub fn point_player(
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
+    mut ev_playerpoint: EventReader<PlayerPointEvent>,
+    //world_position: Vec2, //input of world position to turn towards
     mut player_data: Query<(
         &mut Player,
         &mut ExternalImpulse,
         &Transform,
         With<RigidBody>,
     )>,
-    //world_position: Vec2, //input of world position to turn towards
-    mut ev_playerpoint: EventReader<PlayerPointEvent>,
 ) {
     for (mut player, mut ext_impulse, player_trans, _) in &mut player_data {
         let (camera, camera_transform) = camera_q.single();
