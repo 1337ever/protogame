@@ -3,8 +3,9 @@ use bevy::{
     prelude::*,
     window::{PrimaryWindow, WindowResolution},
 };
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+//use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
+use bevy_egui::{egui, EguiContexts, EguiPlugin};
 
 pub mod gun;
 pub mod object;
@@ -12,7 +13,9 @@ pub mod player;
 pub mod hands;
 pub mod legs;
 pub mod projectile;
+pub mod ui;
 
+use ui::*;
 
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
@@ -22,6 +25,7 @@ use hands::{handle_give_item, GiveItem, InHand};
 use player::{
     player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent,
 };
+
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -49,12 +53,14 @@ fn main() {
                 gun_aiming,
                 handle_give_item,
                 shoot,
+                ui_example_system,
             ),
         )
         .add_event::<PlayerAimingEvent>()
         .add_event::<PlayerPointEvent>()
         .add_event::<GiveItem>()
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(EguiPlugin)
         //.insert_resource(FixedTime::new_from_secs(1.0 / 165.0))
         .run();
 }

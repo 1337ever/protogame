@@ -94,6 +94,7 @@ pub fn player_movement(
 
         let linear_motility = legs.get_walk();
         let angular_motility = legs.get_agility();
+        let aiming_motility = legs.get_aiming_speed();
         //if player not aiming, this might be fucked
         if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
@@ -130,16 +131,16 @@ pub fn player_movement(
             }
         } else {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
-                ext_impulse.impulse.y += linear_motility;
+                ext_impulse.impulse.y += aiming_motility;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
-                ext_impulse.impulse.y -= linear_motility;
+                ext_impulse.impulse.y -= aiming_motility;
             }
             if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
-                ext_impulse.impulse.x += linear_motility;
+                ext_impulse.impulse.x += aiming_motility;
             }
             if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
-                ext_impulse.impulse.x -= linear_motility;
+                ext_impulse.impulse.x -= aiming_motility;
             }
             //no read() in this function, so event buffer must be manually cleared to
             //re-enable movement after aiming button released
@@ -155,16 +156,17 @@ pub fn player_aiming(
     buttons: Res<Input<MouseButton>>,
     mut player_data: Query<(
         With<Player>,
+        With<RigidBody>,
         &mut ExternalImpulse,
         &Transform,
-        With<RigidBody>,
+        &Legs,
     )>,
     mut ev_playeraiming: EventWriter<PlayerAimingEvent>,
     //time_step: Res<FixedTime>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    for (_, mut ext_impulse, player_trans, _) in &mut player_data {
+    for (_, _, mut ext_impulse, player_trans, legs) in &mut player_data {
         if buttons.pressed(MouseButton::Right) {
             ev_playeraiming.send(PlayerAimingEvent(true));
 
@@ -200,7 +202,7 @@ pub fn player_aiming(
                 //if negative, rotate CCW, if positive rotate CW
                 let right_dot_mouse = player_right.dot(to_mouse);
 
-                let rotation_sign = -f32::copysign(0.1, right_dot_mouse);
+                let rotation_sign = -f32::copysign(legs.get_agility(), right_dot_mouse);
 
                 ext_impulse.torque_impulse = rotation_sign;
             }
@@ -252,7 +254,7 @@ pub fn point_player(
             //if negative, rotate CCW, if positive rotate CW
             let right_dot_mouse = player_right.dot(to_mouse);
 
-            let rotation_sign = -f32::copysign(0.1, right_dot_mouse);
+            let rotation_sign = -f32::copysign(ev.speed, right_dot_mouse);
 
             ext_impulse.torque_impulse = rotation_sign;
         }
