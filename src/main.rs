@@ -43,7 +43,10 @@ fn main() {
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(SCALE_FACTOR),
             RapierDebugRenderPlugin::default(),
         ))
-        .add_systems(Startup, (spawn_player))
+        .add_systems(Startup, (
+            spawn_player,
+            ui_load_icons,
+        ))
         .add_systems(
             Update,
             (
@@ -54,6 +57,7 @@ fn main() {
                 handle_give_item,
                 shoot,
                 ui_example_system,
+                ui_hand_system,
             ),
         )
         .add_event::<PlayerAimingEvent>()
