@@ -10,17 +10,17 @@ use bevy_egui::{egui, EguiContexts, EguiPlugin};
 pub mod gun;
 pub mod object;
 pub mod player;
-pub mod hands;
-pub mod legs;
 pub mod projectile;
 pub mod ui;
+pub mod body;
+pub mod reagents;
 
 use ui::*;
 
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
 
-use hands::{handle_give_item, GiveItem, InHand};
+use body::hands::{handle_give_item, GiveItem, InHand};
 
 use player::{
     player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent,
@@ -56,8 +56,8 @@ fn main() {
                 gun_aiming,
                 handle_give_item,
                 shoot,
-                ui_example_system,
                 ui_hand_system,
+                ui_organ_system,
             ),
         )
         .add_event::<PlayerAimingEvent>()

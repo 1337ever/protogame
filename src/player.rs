@@ -3,8 +3,12 @@ use bevy_rapier2d::prelude::*;
 
 use crate::{
     gun::{Gun, GunBundle},
-    hands::Hands,
-    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, legs::Legs,
+    body::hands::{Hands, GiveItem},
+    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, body::legs::Legs,
+    body::organs::{
+        liver::Liver,
+        stomach::Stomach,
+    },
 };
 
 // This should be turned into a bundle
@@ -13,7 +17,12 @@ pub struct Player {
     inventory: Vec<Item>,
 }
 
-pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConfiguration>) {
+
+pub fn spawn_player(
+    mut commands: Commands, 
+    mut rapier_config: ResMut<RapierConfiguration>,
+    mut hand_events: EventWriter<GiveItem>,
+) {
     // Set gravity to 0.0 and spawn camera.
     rapier_config.gravity = Vec2::ZERO;
     commands.spawn(Camera2dBundle::default());
@@ -43,6 +52,8 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
             },
             Hands::human_hands(), //i got hands! wow!
             Legs::human_flesh_legs(), //wowee, legs!
+            Liver::default(),
+            Stomach::default(),
         ))
         .id();
 
@@ -60,6 +71,8 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
         ))
         .id(); //spawn a gun with inhand component
 
+    hand_events.send(GiveItem{receiver: Some(player), item: gun});
+
     let joint = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(20.0, 55.0))
         .local_anchor2(Vec2::new(0.0, -35. / 2.));
@@ -69,6 +82,13 @@ pub fn spawn_player(mut commands: Commands, mut rapier_config: ResMut<RapierConf
     //manually join the gun to the player (in the future this should be done with a pickup/inv system)
 }
 
+
+pub fn player_controls(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut ev_playeraiming: EventReader<PlayerAimingEvent>,
+) {
+
+}
 
 //TODO: make this a player controls system that also handles mouse inputs
 //send events for both keyboard movement and mouse aiming, to cut down on number of systems

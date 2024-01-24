@@ -6,6 +6,16 @@ use bevy::prelude::*;
 #[derive(Debug, Default, Clone)]
 pub struct Hand {
     pub holding: Option<Entity>,
+    pub health: u8,
+}
+
+impl Hand {
+    pub fn default() -> Hand {
+        Hand {
+            holding: None,
+            health: 100,
+        }
+    }
 }
 
 #[derive(Component, Debug, Default, Clone)]
@@ -36,9 +46,12 @@ pub fn handle_give_item(
             if !receiver.can_pickup() {
                 return;
             }
+
+            //bug: this doesnt fire when giveitem event is sent from player setup system
             if items.contains(ev.item) {
                 commands.entity(ev.item);
                 receiver.pickup(ev.item);
+                println!("Given item {:?} to {:?}", receiver, ev.item);
             }
         }
     }

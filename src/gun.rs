@@ -6,7 +6,7 @@ use bevy::{
 use bevy_rapier2d::prelude::*;
 
 use crate::{
-    hands::InHand,
+    body::hands::InHand,
     object::ObjectBundle,
     projectile::{Bullet, BulletBundle},
     PlayerAimingEvent, SCALE_FACTOR,
