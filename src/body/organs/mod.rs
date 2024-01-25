@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
-use crate::reagents::*;
+use crate::{
+    reagents::*,
+    body::liver::*,
+    body::stomach::*,
+};
 pub mod liver;
 pub mod stomach;
 
@@ -9,14 +13,51 @@ pub trait Organ {
     fn list_reagents(&self) -> HashMap<Reagent, u32>;
     //get quantity of a single type of reagent
     fn get_reagent(&self, target: Reagent) -> u32;
-    fn process_reagents(&self);
+    //fn process_reagents(&self);
 }
 
-#[derive(Component)]
-pub struct Organs<T: Organ> {
-    organs: Vec<T>,
+#[derive(Component, Debug)]
+pub struct Organs {
+    //smth abt this weirds me out but whatever it's the ECS Way
+    pub organs: Vec<Entity>,
 }
 
+impl Organs {
+    pub fn default(commands: &mut Commands) -> Organs {
+        Organs {
+            //organs: vec![Stomach::default(), Liver::default()]
+            //organs: Vec::<T>::from([Stomach::default(), Liver::default()])
+            organs: vec![commands.spawn(Stomach::default()).id(), commands.spawn(Liver::default()).id()]
+        }
+    }
+}
+/*
+pub fn process_reagents_system(
+    organ_query: Query<&Stomach, &
+)
+*/
+pub fn test_reagents_system(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut stomach_query: Query<&mut Stomach>,
+) {
+    if keyboard_input.just_pressed(KeyCode::P) {
+        for mut stomach in &mut stomach_query {
+            stomach.holding.push(Reagent::Water);
+        }
+    }
+    if keyboard_input.just_pressed(KeyCode::L) {
+        for mut stomach in &mut stomach_query {
+            stomach.holding.push(Reagent::Toxin);
+        }
+    }
+}
+
+pub fn process_reagents_system(
+    mut stomach_query: Query<&mut Stomach>,
+    mut liver_query: Query<&mut Liver>,
+) {
+
+}
 /* 
 prob not using this stuff, just make organs components
 will come back to bite me when dealing with organ implantation and removal

@@ -8,6 +8,7 @@ use crate::{
     body::organs::{
         liver::Liver,
         stomach::Stomach,
+        Organs,
     },
 };
 
@@ -29,6 +30,7 @@ pub fn spawn_player(
 
     let player_size = 0.8 * SCALE_FACTOR;
 
+    let organs = Organs::default(&mut commands);
     // Spawn entity with `Player` struct as a component for access in movement query.
     let player = commands
         .spawn((
@@ -52,11 +54,12 @@ pub fn spawn_player(
             },
             Hands::human_hands(), //i got hands! wow!
             Legs::human_flesh_legs(), //wowee, legs!
-            Liver::default(),
-            Stomach::default(),
+            //Liver::default(),
+            //Stomach::default(),
+            organs,
         ))
         .id();
-
+    
     let gun = commands
         .spawn((
             GunBundle {

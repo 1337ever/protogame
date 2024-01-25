@@ -14,11 +14,16 @@ pub mod projectile;
 pub mod ui;
 pub mod body;
 pub mod reagents;
+pub mod helpers;
 
 use ui::*;
 
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
+use crate::body::organs::{
+    Organ,
+    test_reagents_system,
+};
 
 use body::hands::{handle_give_item, GiveItem, InHand};
 
@@ -58,6 +63,7 @@ fn main() {
                 shoot,
                 ui_hand_system,
                 ui_organ_system,
+                test_reagents_system,
             ),
         )
         .add_event::<PlayerAimingEvent>()

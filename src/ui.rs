@@ -66,19 +66,22 @@ pub fn ui_hand_system(
     });
 }
 
-pub fn ui_organ_system<T: Organ>(
+pub fn ui_organ_system(
     mut contexts: EguiContexts,
-    organs: Query<(
+    organ_query: Query<(
         With<Player>,
-        &Stomach,
-        &Liver,
-        &Organs<T>,
+        &Organs,
     )>,
+    stomach_query: Query<(&Stomach)>,
 ) {
     egui::Window::new("Organs").show(contexts.ctx_mut(), |ui| {
-        for (_, stomach, liver) in &organs {
-            ui.label(format!("{:?}", stomach));
-            ui.label(format!("{:?}", liver));
+        for (_, organs) in &organ_query {
+            ui.label(format!("{:?}", organs));
+            //ui.label(format!("{:?}", liver));
+            
+        }
+        for stomach in &stomach_query {
+            ui.label(format!("{:?}", stomach.list_reagents()));
         }
     });
 }
