@@ -23,4 +23,5 @@ bevy = { version = "0.12.1", features = ["dynamic_linking"] }
 bevy-inspector-egui = "0.22.1"
 bevy_rapier2d = { version = "0.23.0", features = [ "simd-stable", "debug-render-2d", "parallel" ] }
 bevy_egui = "0.24"
-counter = "0.5.7"
+bevy_console = "0.10.1"
+clap = { version = "4.4.6", features = ["derive"] }

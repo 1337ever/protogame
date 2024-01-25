@@ -1,13 +1,9 @@
 use bevy::prelude::*;
-pub mod legs;
 pub mod hands;
+pub mod legs;
 pub mod organs;
 
-use crate::body::{
-    legs::*, 
-    hands::*,
-    organs::*,
-};
+use crate::body::{hands::*, legs::*, organs::*};
 
 #[derive(Bundle)]
 pub struct Body {
@@ -20,7 +16,7 @@ pub enum Direction {
     Up,
     Down,
     Left,
-    Right
+    Right,
 }
 
 #[derive(Debug)]
@@ -35,5 +31,3 @@ pub struct MovementEvent {
     dir: Direction,
     kind: MoveType,
 }
-
-

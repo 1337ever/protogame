@@ -2,14 +2,11 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
+    body::hands::{GiveItem, Hands},
+    body::legs::Legs,
+    body::organs::{liver::Liver, stomach::Stomach, Organs},
     gun::{Gun, GunBundle},
-    body::hands::{Hands, GiveItem},
-    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR, body::legs::Legs,
-    body::organs::{
-        liver::Liver,
-        stomach::Stomach,
-        Organs,
-    },
+    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
 };
 
 // This should be turned into a bundle
@@ -18,9 +15,8 @@ pub struct Player {
     inventory: Vec<Item>,
 }
 
-
 pub fn spawn_player(
-    mut commands: Commands, 
+    mut commands: Commands,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut hand_events: EventWriter<GiveItem>,
 ) {
@@ -52,14 +48,14 @@ pub fn spawn_player(
                 linear_damping: 3.,
                 angular_damping: 3.,
             },
-            Hands::human_hands(), //i got hands! wow!
+            Hands::human_hands(),     //i got hands! wow!
             Legs::human_flesh_legs(), //wowee, legs!
             //Liver::default(),
             //Stomach::default(),
             organs,
         ))
         .id();
-    
+
     let gun = commands
         .spawn((
             GunBundle {
@@ -71,10 +67,15 @@ pub fn spawn_player(
                 gun: Gun {},
             },
             InHand,
+            Name::new("Gun"),
         ))
         .id(); //spawn a gun with inhand component
-
-    hand_events.send(GiveItem{receiver: Some(player), item: gun});
+               //let name = names.get(gun).unwrap();
+               //println!("{}", name);
+    hand_events.send(GiveItem {
+        receiver: Some(player),
+        item: gun,
+    });
 
     let joint = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(20.0, 55.0))
@@ -85,12 +86,10 @@ pub fn spawn_player(
     //manually join the gun to the player (in the future this should be done with a pickup/inv system)
 }
 
-
 pub fn player_controls(
     keyboard_input: Res<Input<KeyCode>>,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
 ) {
-
 }
 
 //TODO: make this a player controls system that also handles mouse inputs
@@ -125,7 +124,10 @@ pub fn player_movement(
                     x: player_trans.translation.x,
                     y: player_trans.translation.y + 10.,
                 };
-                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ev_playerpoint.send(PlayerPointEvent {
+                    point: point_spot,
+                    speed: angular_motility,
+                });
                 ext_impulse.impulse.y += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::R, KeyCode::Down]) {
@@ -133,7 +135,10 @@ pub fn player_movement(
                     x: player_trans.translation.x,
                     y: player_trans.translation.y - 10.,
                 };
-                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ev_playerpoint.send(PlayerPointEvent {
+                    point: point_spot,
+                    speed: angular_motility,
+                });
                 ext_impulse.impulse.y -= linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::S, KeyCode::Right]) {
@@ -141,7 +146,10 @@ pub fn player_movement(
                     x: player_trans.translation.x + 10.0,
                     y: player_trans.translation.y,
                 };
-                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ev_playerpoint.send(PlayerPointEvent {
+                    point: point_spot,
+                    speed: angular_motility,
+                });
                 ext_impulse.impulse.x += linear_motility;
             }
             if keyboard_input.any_pressed([KeyCode::A, KeyCode::Left]) {
@@ -149,7 +157,10 @@ pub fn player_movement(
                     x: player_trans.translation.x - 10.0,
                     y: player_trans.translation.y,
                 };
-                ev_playerpoint.send(PlayerPointEvent{point: point_spot, speed: angular_motility});
+                ev_playerpoint.send(PlayerPointEvent {
+                    point: point_spot,
+                    speed: angular_motility,
+                });
                 ext_impulse.impulse.x -= linear_motility;
             }
         } else {
@@ -237,7 +248,7 @@ pub fn player_aiming(
 }
 
 #[derive(Event, Debug)]
-pub struct PlayerPointEvent{
+pub struct PlayerPointEvent {
     pub point: Vec2,
     pub speed: f32,
 }

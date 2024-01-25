@@ -1,17 +1,12 @@
-use std::collections::HashMap;
-use crate::{
-    reagents::*,
-    helpers::*,
-    body::Organ,
-};
+use crate::{body::Organ, helpers::*, reagents::*};
 use bevy::prelude::*;
+use std::collections::HashMap;
 
 #[derive(Component, Debug, Default)]
 pub struct Liver {
     holding: Vec<Reagent>,
     health: u8,
 }
-
 
 impl Organ for Liver {
     fn list_reagents(&self) -> HashMap<Reagent, u32> {

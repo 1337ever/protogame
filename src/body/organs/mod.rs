@@ -1,10 +1,6 @@
+use crate::{body::liver::*, body::stomach::*, reagents::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
-use crate::{
-    reagents::*,
-    body::liver::*,
-    body::stomach::*,
-};
 pub mod liver;
 pub mod stomach;
 
@@ -27,15 +23,14 @@ impl Organs {
         Organs {
             //organs: vec![Stomach::default(), Liver::default()]
             //organs: Vec::<T>::from([Stomach::default(), Liver::default()])
-            organs: vec![commands.spawn(Stomach::default()).id(), commands.spawn(Liver::default()).id()]
+            organs: vec![
+                commands.spawn(Stomach::default()).id(),
+                commands.spawn(Liver::default()).id(),
+            ],
         }
     }
 }
-/*
-pub fn process_reagents_system(
-    organ_query: Query<&Stomach, &
-)
-*/
+
 pub fn test_reagents_system(
     keyboard_input: Res<Input<KeyCode>>,
     mut stomach_query: Query<&mut Stomach>,
@@ -56,9 +51,8 @@ pub fn process_reagents_system(
     mut stomach_query: Query<&mut Stomach>,
     mut liver_query: Query<&mut Liver>,
 ) {
-
 }
-/* 
+/*
 prob not using this stuff, just make organs components
 will come back to bite me when dealing with organ implantation and removal
 pub struct Organ<T> {

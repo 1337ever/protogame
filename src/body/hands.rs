@@ -47,11 +47,15 @@ pub fn handle_give_item(
                 return;
             }
 
-            //bug: this doesnt fire when giveitem event is sent from player setup system
             if items.contains(ev.item) {
                 commands.entity(ev.item);
                 receiver.pickup(ev.item);
-                println!("Given item {:?} to {:?}", receiver, ev.item);
+                println!(
+                    "Given item {:?}({:?}) to {:?}",
+                    items.get(ev.item).unwrap(),
+                    ev.item,
+                    receiver
+                );
             }
         }
     }
