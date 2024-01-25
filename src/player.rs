@@ -53,6 +53,7 @@ pub fn spawn_player(
             //Liver::default(),
             //Stomach::default(),
             organs,
+            Name::new("Player"),
         ))
         .id();
 
@@ -67,7 +68,7 @@ pub fn spawn_player(
                 gun: Gun {},
             },
             InHand,
-            Name::new("Gun"),
+            Name::new("Gun, 9mm"),
         ))
         .id(); //spawn a gun with inhand component
                //let name = names.get(gun).unwrap();

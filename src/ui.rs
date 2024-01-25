@@ -36,7 +36,7 @@ pub fn ui_example_system(mut contexts: EguiContexts) {
 
 pub fn ui_hand_system(
     mut contexts: EguiContexts,
-    mut player_hands: Query<(With<Player>, &Hands)>,
+    player_hands: Query<(With<Player>, &Hands)>,
     images: Res<UiIcons>,
     names: Query<&Name>,
 ) {
@@ -62,11 +62,13 @@ pub fn ui_organ_system(
     mut contexts: EguiContexts,
     organ_query: Query<(With<Player>, &Organs)>,
     stomach_query: Query<(&Stomach)>,
+    names: Query<&Name>,
 ) {
     egui::Window::new("Organs").show(contexts.ctx_mut(), |ui| {
         for (_, organs) in &organ_query {
-            ui.label(format!("{:?}", organs));
-            //ui.label(format!("{:?}", liver));
+            for organ in &organs.organs {
+                ui.label(format!("{}", names.get(*organ).unwrap()));
+            }
         }
         for stomach in &stomach_query {
             ui.label(format!("{:?}", stomach.list_reagents()));

@@ -24,8 +24,10 @@ impl Organs {
             //organs: vec![Stomach::default(), Liver::default()]
             //organs: Vec::<T>::from([Stomach::default(), Liver::default()])
             organs: vec![
-                commands.spawn(Stomach::default()).id(),
-                commands.spawn(Liver::default()).id(),
+                commands
+                    .spawn((Stomach::default(), Name::new("Stomach")))
+                    .id(),
+                commands.spawn((Liver::default(), Name::new("Liver"))).id(),
             ],
         }
     }
