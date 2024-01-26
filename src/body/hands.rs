@@ -1,4 +1,4 @@
-use crate::player::Player;
+use crate::agent::player::Player;
 use bevy::prelude::*;
 
 //code here stolen from/based on https://github.com/mwbryant/logic-ss13-roguelike/blob/master/src/hands.rs

@@ -1,4 +1,4 @@
-use crate::player::Player;
+use crate::agent::player::Player;
 use bevy::prelude::*;
 
 #[derive(Debug)]

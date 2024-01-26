@@ -28,8 +28,6 @@ pub struct Organs {
 impl Organs {
     pub fn default(commands: &mut Commands) -> Organs {
         Organs {
-            //organs: vec![Stomach::default(), Liver::default()]
-            //organs: Vec::<T>::from([Stomach::default(), Liver::default()])
             organs: vec![
                 commands
                     .spawn((Stomach::default(), Name::new("Stomach")))
@@ -66,16 +64,8 @@ pub fn test_reagents_system(
     }
 }
 
-pub fn process_reagents_system(
+pub fn reagents_metabolisis(
     mut stomach_query: Query<&mut Stomach>,
     mut liver_query: Query<&mut Liver>,
 ) {
 }
-/*
-prob not using this stuff, just make organs components
-will come back to bite me when dealing with organ implantation and removal
-pub struct Organ<T> {
-    organ: T,
-    health: u8,
-}
-*/

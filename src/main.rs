@@ -8,12 +8,12 @@ use bevy_egui::{egui, EguiContexts, EguiPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 
+pub mod agent;
 pub mod body;
 pub mod commands;
 pub mod gun;
 pub mod helpers;
 pub mod object;
-pub mod player;
 pub mod projectile;
 pub mod reagents;
 pub mod ui;
@@ -23,6 +23,7 @@ use ui::*;
 use crate::body::organs::{test_reagents_system, Organ};
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
+use agent::npc::*;
 
 use body::{
     handle_movement_event, handle_point_body,
@@ -33,7 +34,7 @@ use body::{
 
 use commands::*;
 
-use player::{player_aiming, player_controls, spawn_player, PlayerAimingEvent};
+use agent::player::{player_aiming, player_controls, spawn_player, PlayerAimingEvent};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -52,7 +53,7 @@ fn main() {
             RapierDebugRenderPlugin::default(),
             ConsolePlugin,
         ))
-        .add_systems(Startup, (spawn_player, ui_load_icons))
+        .add_systems(Startup, (spawn_player, ui_load_icons, spawn_npc))
         .add_systems(
             Update,
             (

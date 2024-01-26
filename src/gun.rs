@@ -49,7 +49,6 @@ pub fn shoot(
                         .id();
 
                     let gun_forward = (trans.rotation * Vec3::Y).xy() * 20.;
-                    //println!("{:?}", gun_forward);
                     commands.entity(bullet).insert(ExternalImpulse {
                         impulse: gun_forward, //this is fucked
                         torque_impulse: 0.,

@@ -1,6 +1,6 @@
+use crate::agent::player::*;
 use crate::body::hands::*;
 use crate::body::organs::{liver::*, stomach::*, Organ, Organs};
-use crate::player::*;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
 

@@ -51,11 +51,8 @@ pub fn spawn_player(
                 linear_damping: 3.,
                 angular_damping: 3.,
             },
-            Hands::human_hands(),     //i got hands! wow!
-            Legs::human_flesh_legs(), //wowee, legs!
-            //Liver::default(),
-            //Stomach::default(),
-            organs,
+            Body::default(),
+            organs, //bodies and organs are separate, to allow for bodies without organs
             Name::new("Player"),
         ))
         .id();

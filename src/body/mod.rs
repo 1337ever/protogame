@@ -8,10 +8,19 @@ use crate::body::{hands::*, legs::*, organs::*};
 
 //Module for things that have bodies (players, NPCs); so they can all use the same movement code
 
-#[derive(Bundle, Debug, Default)]
+#[derive(Bundle, Debug)]
 pub struct Body {
-    legs: Legs,
-    hands: Hands,
+    pub legs: Legs,
+    pub hands: Hands,
+}
+
+impl Default for Body {
+    fn default() -> Self {
+        Body {
+            legs: Legs::human_flesh_legs(),
+            hands: Hands::human_hands(),
+        }
+    }
 }
 
 #[derive(Debug)]
