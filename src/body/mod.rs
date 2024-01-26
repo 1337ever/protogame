@@ -85,10 +85,24 @@ pub fn handle_movement_event(
     mut move_ev: EventReader<MovementEvent>,
     mut phys_data: Query<(With<RigidBody>, &Legs, &mut ExternalImpulse, &Transform)>,
 ) {
-    for (_, legs, ext_impulse, transform) in &phys_data {
-        for ev in move_ev.read() {
-            if phys_data.contains(ev.target) {
-                //println!("success");
+    for ev in move_ev.read() {
+        if phys_data.contains(ev.target) {
+            if let Ok(body_data) = phys_data.get_mut(ev.target) {
+                let legs = body_data.1;
+                let mut impulsedata = body_data.2;
+                let speed = match ev.kind {
+                    MoveType::Run => legs.get_run_speed(),
+                    MoveType::Walk => legs.get_walk_speed(),
+                    _ => legs.get_walk_speed(),
+                };
+
+                let impulse: Vec2 = match ev.dir {
+                    MoveDir::Up => [0., speed].into(),
+                    MoveDir::Down => [0., -speed].into(),
+                    MoveDir::Left => [-speed, 0.].into(),
+                    MoveDir::Right => [speed, 0.].into(),
+                };
+                impulsedata.impulse += impulse;
             }
         }
     }

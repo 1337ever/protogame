@@ -6,7 +6,6 @@ use bevy::{
 use bevy_rapier2d::prelude::*;
 
 use crate::{
-    body::hands::InHand,
     object::ObjectBundle,
     projectile::{Bullet, BulletBundle},
     PlayerAimingEvent, SCALE_FACTOR,
@@ -27,12 +26,12 @@ pub struct Gun {
 pub fn shoot(
     buttons: Res<Input<MouseButton>>,
     mut commands: Commands,
-    gun: Query<(&Transform, With<Gun>, With<InHand>)>, //look for guns held in the player's hands
+    gun: Query<(&Transform, With<Gun>)>, //look for guns
     mut ev_playeraiming: EventReader<PlayerAimingEvent>, //if the player is aiming
 ) {
     for ev in ev_playeraiming.read() {
         if ev.0 == true {
-            for (trans, _, _) in &gun {
+            for (trans, _) in &gun {
                 if buttons.just_pressed(MouseButton::Left) {
                     let (bx, by) = (0.00965 * SCALE_FACTOR, 0.0105 * SCALE_FACTOR); //9mm bullet dimensions
                     let bullet = commands
@@ -62,20 +61,14 @@ pub fn shoot(
 }
 
 pub fn gun_aiming(
-    mut gun_data: Query<(
-        &mut Gun,
-        &mut ExternalImpulse,
-        &Transform,
-        With<RigidBody>,
-        With<InHand>,
-    )>,
+    mut gun_data: Query<(&mut Gun, &mut ExternalImpulse, &Transform, With<RigidBody>)>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>, //if the player is aiming
 ) {
     for ev in ev_playeraiming.read() {
         if ev.0 == true {
-            for (mut gun, mut ext_impulse, gun_trans, _, _) in &mut gun_data {
+            for (mut gun, mut ext_impulse, gun_trans, _) in &mut gun_data {
                 let (camera, camera_transform) = camera_q.single();
 
                 //copypaste from player aiming, all this should be a function that gets shared between these systems

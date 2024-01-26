@@ -70,7 +70,6 @@ pub fn spawn_player(
                 ),
                 gun: Gun {},
             },
-            InHand,
             Name::new("Gun, 9mm"),
         ))
         .id(); //spawn a gun with inhand component
@@ -158,9 +157,9 @@ pub fn player_movement(
         //TODO: make player travel faster if they're moving in the direction they're pointing
         //TODO: if not aiming, movement keys should rotate player in direction of travel
 
-        let linear_motility = legs.get_walk();
+        let linear_motility = legs.get_run_speed();
         let angular_motility = legs.get_agility();
-        let aiming_motility = legs.get_aiming_speed();
+        let aiming_motility = legs.get_walk_speed();
         //if player not aiming, this might be fucked
         if ev_playeraiming.is_empty() {
             if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
@@ -248,9 +247,9 @@ pub fn player_aiming(
             .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
             .map(|ray| ray.origin.truncate())
         {
-            ev_playerpoint.send(PointEvent{
+            ev_playerpoint.send(PointEvent {
                 target: player.get_single().unwrap(),
-                point: mouse_world_position
+                point: mouse_world_position,
             })
         }
     }

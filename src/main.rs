@@ -25,8 +25,7 @@ use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
 
 use body::{
-    handle_movement_event,
-    handle_point_body,
+    handle_movement_event, handle_point_body,
     hands::{handle_give_item, GiveItem, InHand},
     organs::GiveReagent,
     MovementEvent, PointEvent,
