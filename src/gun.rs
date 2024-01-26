@@ -36,14 +36,17 @@ pub fn shoot(
                 if buttons.just_pressed(MouseButton::Left) {
                     let (bx, by) = (0.00965 * SCALE_FACTOR, 0.0105 * SCALE_FACTOR); //9mm bullet dimensions
                     let bullet = commands
-                        .spawn(BulletBundle {
-                            obj_bundle: ObjectBundle::new(
-                                Vec2::new(trans.translation.x + bx, trans.translation.y + by),
-                                Vec2::new(bx, by),
-                                Some(11340. / SCALE_FACTOR), //density of lead in kg/m3
-                            ),
-                            bullet: Bullet,
-                        })
+                        .spawn((
+                            BulletBundle {
+                                obj_bundle: ObjectBundle::new(
+                                    Vec2::new(trans.translation.x + bx, trans.translation.y + by),
+                                    Vec2::new(bx, by),
+                                    Some(11340. / SCALE_FACTOR), //density of lead in kg/m3
+                                ),
+                                bullet: Bullet,
+                            },
+                            Name::new("Bullet, 9mm"),
+                        ))
                         .id();
 
                     let gun_forward = (trans.rotation * Vec3::Y).xy() * 20.;

@@ -24,12 +24,19 @@ use crate::body::organs::{test_reagents_system, Organ};
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
 
-use body::hands::{handle_give_item, GiveItem, InHand};
+use body::{
+    handle_movement_event,
+    handle_point_body,
+    hands::{handle_give_item, GiveItem, InHand},
+    organs::GiveReagent,
+    MovementEvent, PointEvent,
+};
 
 use commands::*;
 
 use player::{
-    player_aiming, player_movement, point_player, spawn_player, PlayerAimingEvent, PlayerPointEvent,
+    player_aiming, player_controls, player_movement, point_player, spawn_player, PlayerAimingEvent,
+    PlayerPointEvent,
 };
 
 pub const SCALE_FACTOR: f32 = 50.;
@@ -53,7 +60,7 @@ fn main() {
         .add_systems(
             Update,
             (
-                player_movement,
+                //player_movement,
                 player_aiming,
                 point_player,
                 gun_aiming,
@@ -61,14 +68,21 @@ fn main() {
                 shoot,
                 ui_hand_system,
                 ui_organ_system,
+                player_controls,
+                handle_movement_event,
+                handle_point_body,
                 //test_reagents_system,
             ),
         )
         .add_event::<PlayerAimingEvent>()
         .add_event::<PlayerPointEvent>()
         .add_event::<GiveItem>()
+        .add_event::<GiveReagent>()
+        .add_event::<MovementEvent>()
+        .add_event::<PointEvent>()
         .add_plugins(WorldInspectorPlugin::new())
         .add_console_command::<ExampleCommand, _>(example_command)
+        .add_console_command::<AddReagentCommand, _>(add_reagent_command)
         //.add_plugins(EguiPlugin)
         //.insert_resource(FixedTime::new_from_secs(1.0 / 165.0))
         .run();

@@ -12,6 +12,13 @@ pub trait Organ {
     //fn process_reagents(&self);
 }
 
+//TODO: add a GiveReagent system like the hands system
+#[derive(Event)]
+pub struct GiveReagent {
+    pub receiver: Entity,
+    pub reagent: Reagent,
+}
+
 #[derive(Component, Debug)]
 pub struct Organs {
     //smth abt this weirds me out but whatever it's the ECS Way
@@ -31,6 +38,16 @@ impl Organs {
             ],
         }
     }
+}
+
+pub fn handle_give_reagent(
+    mut commands: Commands,
+    mut events: EventReader<GiveReagent>,
+    mut organs: Query<&mut Organs>,
+    //player: Query<Entity, With<Player>>,
+    items: Query<&Name>,
+) {
+    for ev in events.read() {}
 }
 
 pub fn test_reagents_system(

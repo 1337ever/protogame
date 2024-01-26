@@ -25,5 +25,7 @@ pub struct AddReagentCommand {
 }
 
 pub fn add_reagent_command(mut log: ConsoleCommand<AddReagentCommand>) {
-    if let Some(Ok(AddReagentCommand { reagent })) = log.take() {}
+    if let Some(Ok(AddReagentCommand { reagent })) = log.take() {
+        //need to add a GiveReagent even system thing, like hands
+    }
 }

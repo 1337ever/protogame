@@ -34,6 +34,7 @@ pub struct GiveItem {
     pub item: Entity,
 }
 
+//TODO: try to generalize this so potential AI agents could use it too
 pub fn handle_give_item(
     mut commands: Commands,
     mut events: EventReader<GiveItem>,
@@ -52,7 +53,7 @@ pub fn handle_give_item(
                 receiver.pickup(ev.item);
                 println!(
                     "Given item {:?}({:?}) to {:?}",
-                    items.get(ev.item).unwrap(),
+                    items.get(ev.item).unwrap(), //this causes occasional crashes on startup, probably some kind of race condition with adding names
                     ev.item,
                     receiver
                 );

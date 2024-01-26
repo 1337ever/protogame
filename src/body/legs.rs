@@ -1,6 +1,7 @@
 use crate::player::Player;
 use bevy::prelude::*;
 
+#[derive(Debug)]
 pub struct Leg {
     pub lin_strength: f32, //value representing linear legginess
     pub ang_strength: f32, //value representing leg torque ability (affects turning speed)
@@ -20,13 +21,18 @@ impl Leg {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Debug, Default)]
 pub struct Legs {
     pub legs: Vec<Leg>,
 }
 
 impl Legs {
     pub fn human_flesh_legs() -> Self {
+        Self {
+            legs: vec![Leg::default(), Leg::default()],
+        }
+    }
+    pub fn default() -> Self {
         Self {
             legs: vec![Leg::default(), Leg::default()],
         }
