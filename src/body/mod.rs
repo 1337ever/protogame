@@ -6,7 +6,7 @@ pub mod organs;
 
 use crate::body::{hands::*, legs::*, organs::*};
 
-//Module for things that have bodies (players, AI); so they can all use the same movement code
+//Module for things that have bodies (players, NPCs); so they can all use the same movement code
 
 #[derive(Bundle, Debug, Default)]
 pub struct Body {
@@ -81,11 +81,11 @@ pub struct MovementEvent {
 }
 
 pub fn handle_movement_event(
-    mut commands: Commands,
     mut move_ev: EventReader<MovementEvent>,
     mut phys_data: Query<(With<RigidBody>, &Legs, &mut ExternalImpulse, &Transform)>,
 ) {
     for ev in move_ev.read() {
+        //all this weird stuff is to get around ownership/mutability constraints
         if phys_data.contains(ev.target) {
             if let Ok(body_data) = phys_data.get_mut(ev.target) {
                 let legs = body_data.1;

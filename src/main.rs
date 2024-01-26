@@ -33,10 +33,7 @@ use body::{
 
 use commands::*;
 
-use player::{
-    player_aiming, player_controls, player_movement, point_player, spawn_player, PlayerAimingEvent,
-    PlayerPointEvent,
-};
+use player::{player_aiming, player_controls, spawn_player, PlayerAimingEvent};
 
 pub const SCALE_FACTOR: f32 = 50.;
 
@@ -59,9 +56,7 @@ fn main() {
         .add_systems(
             Update,
             (
-                //player_movement,
                 player_aiming,
-                point_player,
                 gun_aiming,
                 handle_give_item,
                 shoot,
@@ -74,7 +69,6 @@ fn main() {
             ),
         )
         .add_event::<PlayerAimingEvent>()
-        .add_event::<PlayerPointEvent>()
         .add_event::<GiveItem>()
         .add_event::<GiveReagent>()
         .add_event::<MovementEvent>()
