@@ -54,7 +54,7 @@ pub fn handle_point_body(
                 //get dot product between body forward vector and direction to the point
                 let forward_dot_point = forward.dot(to_point);
 
-                //if player is already facing mouse
+                //if body is already facing point
                 if (forward_dot_point - 1.0).abs() < f32::EPSILON {
                     continue;
                 }

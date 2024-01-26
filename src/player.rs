@@ -28,6 +28,7 @@ pub fn spawn_player(
 
     let player_size = 0.8 * SCALE_FACTOR;
 
+    //theres prob a better way to do this but i cant bother. organs needs Commands bc it needs to spawn entities
     let organs = Organs::default(&mut commands);
     // Spawn entity with `Player` struct as a component for access in movement query.
     let player = commands
@@ -92,9 +93,8 @@ pub fn spawn_player(
 pub fn player_controls(
     keyboard_input: Res<Input<KeyCode>>,
     mut ev_playeraiming: EventWriter<PlayerAimingEvent>,
-    mut ev_playerpoint: EventWriter<PlayerPointEvent>,
     mut ev_movement: EventWriter<MovementEvent>,
-    mut player_data: Query<(With<Player>, &Legs)>,
+    player_data: Query<(With<Player>, &Legs)>,
     buttons: Res<Input<MouseButton>>,
     player: Query<Entity, With<Player>>,
 ) {
@@ -106,7 +106,6 @@ pub fn player_controls(
             movetype = MoveType::Walk;
             ev_playeraiming.send(PlayerAimingEvent(true));
         }
-
         if keyboard_input.any_pressed([KeyCode::W, KeyCode::Up]) {
             ev_movement.send(MovementEvent {
                 target: player_entity,
@@ -232,35 +231,27 @@ pub fn player_movement(
 pub struct PlayerAimingEvent(pub bool);
 
 pub fn player_aiming(
-    mut player_data: Query<(
-        With<Player>,
-        With<RigidBody>,
-        &mut ExternalImpulse,
-        &Transform,
-        &Legs,
-    )>,
+    player: Query<Entity, With<Player>>,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
-    mut ev_playerpoint: EventWriter<PlayerPointEvent>,
+    mut ev_playerpoint: EventWriter<PointEvent>,
     //time_step: Res<FixedTime>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    for (_, _, mut ext_impulse, player_trans, legs) in &mut player_data {
-        for ev in ev_playeraiming.read() {
-            let (camera, camera_transform) = camera_q.single();
+    for ev in ev_playeraiming.read() {
+        let (camera, camera_transform) = camera_q.single();
 
-            //horrific copypaste monstrosity please help i don't know how closures work
-            if let Some(mouse_world_position) = windows
-                .single()
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin.truncate())
-            {
-                ev_playerpoint.send(PlayerPointEvent {
-                    point: mouse_world_position,
-                    speed: legs.get_agility(),
-                })
-            }
+        //horrific copypaste monstrosity to find the position of the mouse
+        if let Some(mouse_world_position) = windows
+            .single()
+            .cursor_position()
+            .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+            .map(|ray| ray.origin.truncate())
+        {
+            ev_playerpoint.send(PointEvent{
+                target: player.get_single().unwrap(),
+                point: mouse_world_position
+            })
         }
     }
 }
