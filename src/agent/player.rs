@@ -8,13 +8,13 @@ use crate::{
     body::organs::{liver::Liver, stomach::Stomach, Organs},
     body::*,
     gun::{Gun, GunBundle},
-    InHand, Item, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
+    InHand, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
 };
 
 // This should be turned into a bundle
 #[derive(Component, Default)]
 pub struct Player {
-    inventory: Vec<Item>,
+    inventory: Vec<Entity>,
 }
 
 pub fn spawn_player(

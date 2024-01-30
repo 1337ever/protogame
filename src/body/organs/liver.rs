@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 #[derive(Component, Debug, Default)]
 pub struct Liver {
-    holding: Vec<Reagent>,
+    pub holding: Vec<Reagent>,
     health: u8,
 }
 

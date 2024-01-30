@@ -13,6 +13,7 @@ pub mod body;
 pub mod commands;
 pub mod gun;
 pub mod helpers;
+pub mod items;
 pub mod object;
 pub mod projectile;
 pub mod reagents;
@@ -21,9 +22,9 @@ pub mod ui;
 use ui::*;
 
 use crate::body::organs::{test_reagents_system, Organ};
+use agent::npc::*;
 use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
-use agent::npc::*;
 
 use body::{
     handle_movement_event, handle_point_body,
@@ -80,12 +81,4 @@ fn main() {
         //.add_plugins(EguiPlugin)
         //.insert_resource(FixedTime::new_from_secs(1.0 / 165.0))
         .run();
-}
-
-#[derive(Component, Default)]
-struct Item;
-#[derive(Bundle, Default)]
-struct ItemBundle {
-    //bundle for things that can be picked up
-    obj_bundle: ObjectBundle,
 }

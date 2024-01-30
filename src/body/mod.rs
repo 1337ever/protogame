@@ -1,10 +1,13 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 pub mod hands;
+pub mod head;
 pub mod legs;
 pub mod organs;
 
 use crate::body::{hands::*, legs::*, organs::*};
+
+use self::head::Head;
 
 //Module for things that have bodies (players, NPCs); so they can all use the same movement code
 
@@ -12,6 +15,7 @@ use crate::body::{hands::*, legs::*, organs::*};
 pub struct Body {
     pub legs: Legs,
     pub hands: Hands,
+    pub head: Head,
 }
 
 impl Default for Body {
@@ -19,6 +23,7 @@ impl Default for Body {
         Body {
             legs: Legs::human_flesh_legs(),
             hands: Hands::human_hands(),
+            head: Head::default(),
         }
     }
 }
