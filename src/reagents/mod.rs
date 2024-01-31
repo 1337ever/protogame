@@ -9,4 +9,9 @@ pub enum Reagent {
     Toxin,
     Bicaridine,
     Nicotine,
+    Protein,
+    Omega3,
+    Carb,
+    Sugar,
+    Salt,
 }
