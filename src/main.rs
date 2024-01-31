@@ -19,6 +19,8 @@ pub mod projectile;
 pub mod reagents;
 pub mod ui;
 
+use items::Item;
+use reagents::container::Container;
 use ui::*;
 
 use crate::body::organs::{test_reagents_system, Organ};
@@ -27,10 +29,7 @@ use gun::{gun_aiming, shoot, Gun, GunBundle};
 use object::ObjectBundle;
 
 use body::{
-    handle_movement_event, handle_point_body,
-    hands::{handle_give_item, GiveItem, InHand},
-    organs::GiveReagent,
-    MovementEvent, PointEvent,
+    handle_movement_event, handle_point_body, hands::{handle_give_item, GiveItem, Hands, InHand}, head::Head, organs::{liver::Liver, stomach::Stomach, GiveReagent, Organs}, MovementEvent, PointEvent
 };
 
 use commands::*;
@@ -75,6 +74,14 @@ fn main() {
         .add_event::<GiveReagent>()
         .add_event::<MovementEvent>()
         .add_event::<PointEvent>()
+        .register_type::<Container>()
+        .register_type::<Stomach>()
+        .register_type::<Liver>()
+        .register_type::<Container>()
+        .register_type::<Organs>()
+        .register_type::<Head>()
+        .register_type::<Hands>()
+        .register_type::<Item>()
         .add_plugins(WorldInspectorPlugin::new())
         .add_console_command::<ExampleCommand, _>(example_command)
         .add_console_command::<AddReagentCommand, _>(add_reagent_command)

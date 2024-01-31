@@ -4,7 +4,7 @@ use crate::reagents::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Reflect)]
 pub struct Stomach {
     pub holding: Vec<Reagent>,
     health: u8,

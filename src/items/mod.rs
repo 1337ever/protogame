@@ -6,7 +6,7 @@ pub mod food;
 
 //might implement a smell system, but that might be going a little too far
 
-#[derive(Component)]
+#[derive(Component, Debug, Reflect)]
 pub struct Item {
     pub name: Name, //can i have components inside components? let's see
     pub desc: String,

@@ -11,6 +11,9 @@ use crate::{
     InHand, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
 };
 
+use self::head::Mouth;
+use self::head::Head;
+
 // This should be turned into a bundle
 #[derive(Component, Default)]
 pub struct Player {
@@ -30,6 +33,7 @@ pub fn spawn_player(
 
     //theres prob a better way to do this but i cant bother. organs needs Commands bc it needs to spawn entities
     let organs = Organs::default(&mut commands);
+    let mouth = Mouth::with_xuyin(&mut commands);
     // Spawn entity with `Player` struct as a component for access in movement query.
     let player = commands
         .spawn((
@@ -51,7 +55,10 @@ pub fn spawn_player(
                 linear_damping: 3.,
                 angular_damping: 3.,
             },
-            Body::default(),
+            Body {
+                head: Head {mouth: mouth},
+                ..Default::default()
+            },
             organs, //bodies and organs are separate, to allow for bodies without organs
             Name::new("Player"),
         ))

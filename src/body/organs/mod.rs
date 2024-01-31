@@ -19,7 +19,7 @@ pub struct GiveReagent {
     pub reagent: Reagent,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Reflect)]
 pub struct Organs {
     //smth abt this weirds me out but whatever it's the ECS Way
     pub organs: Vec<Entity>,

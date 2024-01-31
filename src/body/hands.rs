@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 //code here stolen from/based on https://github.com/mwbryant/logic-ss13-roguelike/blob/master/src/hands.rs
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Reflect)]
 pub struct Hand {
     pub holding: Option<Entity>,
     pub health: u8,
@@ -18,7 +18,7 @@ impl Hand {
     }
 }
 
-#[derive(Component, Debug, Default, Clone)]
+#[derive(Component, Debug, Default, Clone, Reflect)]
 pub struct Hands {
     pub hands: Vec<Hand>,
     pub active: Option<usize>,
@@ -34,7 +34,6 @@ pub struct GiveItem {
     pub item: Entity,
 }
 
-//TODO: try to generalize this so potential AI agents could use it too
 pub fn handle_give_item(
     mut commands: Commands,
     mut events: EventReader<GiveItem>,

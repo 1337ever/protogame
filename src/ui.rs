@@ -1,8 +1,11 @@
 use crate::agent::player::*;
-use crate::body::hands::*;
+use crate::body::{hands::*, head};
 use crate::body::organs::{liver::*, stomach::*, Organ, Organs};
+use crate::body::head::*;
+use crate::body::head::Mouth;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
+use crate::items::Item;
 
 #[derive(Resource)]
 pub struct UiIcons {
@@ -62,7 +65,9 @@ pub fn ui_organ_system(
     mut contexts: EguiContexts,
     organ_query: Query<(With<Player>, &Organs)>,
     stomach_query: Query<(&Stomach)>,
+    head_query: Query<(&Head, With<Player>)>,
     names: Query<&Name>,
+    items: Query<&Item>,
 ) {
     egui::Window::new("Organs").show(contexts.ctx_mut(), |ui| {
         for (_, organs) in &organ_query {
@@ -72,6 +77,9 @@ pub fn ui_organ_system(
         }
         for stomach in &stomach_query {
             ui.label(format!("{:?}", stomach.list_reagents()));
+        }
+        for (head, _) in &head_query {
+            ui.label(format!("Mouth: {:?}", items.get(head.mouth.holding.unwrap()).unwrap()));
         }
     });
 }

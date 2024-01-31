@@ -2,7 +2,7 @@ use crate::{body::Organ, helpers::*, reagents::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Reflect)]
 pub struct Liver {
     pub holding: Vec<Reagent>,
     health: u8,
