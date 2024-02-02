@@ -1,4 +1,5 @@
 use bevy::{
+    diagnostic::FrameTimeDiagnosticsPlugin,
     math::Vec3Swizzles,
     prelude::*,
     window::{PrimaryWindow, WindowResolution},
@@ -26,10 +27,14 @@ use ui::*;
 use crate::body::organs::{test_reagents_system, Organ};
 use agent::npc::*;
 use gun::{gun_aiming, shoot, Gun, GunBundle};
-use object::ObjectBundle;
+use object::{Health, ObjectBundle};
 
 use body::{
-    handle_movement_event, handle_point_body, hands::{handle_give_item, GiveItem, Hands, InHand}, head::Head, organs::{liver::Liver, stomach::Stomach, GiveReagent, Organs}, MovementEvent, PointEvent
+    handle_movement_event, handle_point_body,
+    hands::{handle_give_item, GiveItem, Hands, InHand},
+    head::Head,
+    organs::{liver::Liver, stomach::Stomach, GiveReagent, Organs},
+    MovementEvent, PointEvent,
 };
 
 use commands::*;
@@ -52,6 +57,7 @@ fn main() {
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(SCALE_FACTOR),
             RapierDebugRenderPlugin::default(),
             ConsolePlugin,
+            WorldInspectorPlugin::default(),
         ))
         .add_systems(Startup, (spawn_player, ui_load_icons, spawn_npc))
         .add_systems(
@@ -78,11 +84,12 @@ fn main() {
         .register_type::<Stomach>()
         .register_type::<Liver>()
         .register_type::<Container>()
+        .register_type::<Health>()
         .register_type::<Organs>()
         .register_type::<Head>()
         .register_type::<Hands>()
         .register_type::<Item>()
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins((EditorPlugin::default(), FrameTimeDiagnosticsPlugin::default(), EntityCountDiagnosticsPlugin::default()))
         .add_console_command::<ExampleCommand, _>(example_command)
         .add_console_command::<AddReagentCommand, _>(add_reagent_command)
         //.add_plugins(EguiPlugin)

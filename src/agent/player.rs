@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_egui::egui::Key;
+//use bevy_egui::egui::Key;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
@@ -11,8 +11,9 @@ use crate::{
     InHand, ObjectBundle, PrimaryWindow, SCALE_FACTOR,
 };
 
-use self::head::Mouth;
 use self::head::Head;
+use self::head::Mouth;
+use crate::helpers::MainCamera;
 
 // This should be turned into a bundle
 #[derive(Component, Default)]
@@ -27,7 +28,9 @@ pub fn spawn_player(
 ) {
     // Set gravity to 0.0 and spawn camera.
     rapier_config.gravity = Vec2::ZERO;
-    commands.spawn(Camera2dBundle::default());
+    commands
+        .spawn(Camera2dBundle::default())
+        .insert(MainCamera {});
 
     let player_size = 0.8 * SCALE_FACTOR;
 
@@ -56,7 +59,7 @@ pub fn spawn_player(
                 angular_damping: 3.,
             },
             Body {
-                head: Head {mouth: mouth},
+                head: Head { mouth: mouth },
                 ..Default::default()
             },
             organs, //bodies and organs are separate, to allow for bodies without organs
@@ -145,23 +148,23 @@ pub fn player_aiming(
     mut ev_playeraiming: EventReader<PlayerAimingEvent>,
     mut ev_playerpoint: EventWriter<PointEvent>,
     //time_step: Res<FixedTime>,
-    camera_q: Query<(&Camera, &GlobalTransform)>,
+    camera_q: Query<(&Camera, &GlobalTransform, With<MainCamera>)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
     for ev in ev_playeraiming.read() {
-        let (camera, camera_transform) = camera_q.single();
-
-        //horrific copypaste monstrosity to find the position of the mouse
-        if let Some(mouse_world_position) = windows
-            .single()
-            .cursor_position()
-            .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-            .map(|ray| ray.origin.truncate())
-        {
-            ev_playerpoint.send(PointEvent {
-                target: player.get_single().unwrap(),
-                point: mouse_world_position,
-            })
+        if let Ok((camera, camera_transform, _)) = camera_q.get_single() {
+            //horrific copypaste monstrosity to find the position of the mouse
+            if let Some(mouse_world_position) = windows
+                .single()
+                .cursor_position()
+                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                .map(|ray| ray.origin.truncate())
+            {
+                ev_playerpoint.send(PointEvent {
+                    target: player.get_single().unwrap(),
+                    point: mouse_world_position,
+                })
+            }
         }
     }
 }

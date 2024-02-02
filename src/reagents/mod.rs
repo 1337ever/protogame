@@ -14,4 +14,5 @@ pub enum Reagent {
     Carb,
     Sugar,
     Salt,
+    Caffeine,
 }

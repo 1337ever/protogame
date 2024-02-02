@@ -1,11 +1,11 @@
 use crate::agent::player::*;
-use crate::body::{hands::*, head};
-use crate::body::organs::{liver::*, stomach::*, Organ, Organs};
-use crate::body::head::*;
 use crate::body::head::Mouth;
+use crate::body::head::*;
+use crate::body::organs::{liver::*, stomach::*, Organ, Organs};
+use crate::body::{hands::*, head};
+use crate::items::Item;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
-use crate::items::Item;
 
 #[derive(Resource)]
 pub struct UiIcons {
@@ -45,19 +45,21 @@ pub fn ui_hand_system(
 ) {
     let bevy_texture_id = contexts.add_image(images.righthandui.clone_weak());
     egui::Window::new("Hands").show(contexts.ctx_mut(), |ui| {
-        for (_, hands) in player_hands.get_single() {
-            //maybe come back to this, but there should only ever be one Hands on a Player
-            for hand in hands.hands.iter() {
-                ui.add(egui::widgets::Image::new(egui::load::SizedTexture::new(
-                    bevy_texture_id,
-                    [32., 32.],
-                )));
+        ui.horizontal(|ui| {
+            for (_, hands) in player_hands.get_single() {
+                //maybe come back to this, but there should only ever be one Hands on a Player
+                for hand in hands.hands.iter() {
+                    ui.add(egui::widgets::Image::new(egui::load::SizedTexture::new(
+                        bevy_texture_id,
+                        [32., 32.],
+                    )));
+                }
+                ui.label(format!(
+                    "Active: {}",
+                    names.get(hands.get_active_held().unwrap()).unwrap()
+                ));
             }
-            ui.label(format!(
-                "Active: {}",
-                names.get(hands.get_active_held().unwrap()).unwrap()
-            ));
-        }
+        })
     });
 }
 
@@ -79,7 +81,10 @@ pub fn ui_organ_system(
             ui.label(format!("{:?}", stomach.list_reagents()));
         }
         for (head, _) in &head_query {
-            ui.label(format!("Mouth: {:?}", items.get(head.mouth.holding.unwrap()).unwrap()));
+            ui.label(format!(
+                "Mouth: {:?}",
+                items.get(head.mouth.holding.unwrap()).unwrap()
+            ));
         }
     });
 }

@@ -1,5 +1,9 @@
 use crate::reagents::Reagent;
+use bevy::prelude::*;
 use std::collections::HashMap;
+
+#[derive(Component)]
+pub struct MainCamera {}
 
 //copypasta
 pub fn count_element_function<I>(it: I) -> HashMap<I::Item, u32>

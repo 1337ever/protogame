@@ -1,6 +1,9 @@
 use crate::{body::liver::*, body::stomach::*, reagents::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
+
+use self::brain::BrainBundle;
+pub mod brain;
 pub mod liver;
 pub mod stomach;
 
@@ -33,6 +36,9 @@ impl Organs {
                     .spawn((Stomach::default(), Name::new("Stomach")))
                     .id(),
                 commands.spawn((Liver::default(), Name::new("Liver"))).id(),
+                commands
+                    .spawn((BrainBundle::default(), Name::new("Brain")))
+                    .id(),
             ],
         }
     }

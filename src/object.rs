@@ -1,6 +1,15 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+#[derive(Component, Debug, Reflect)]
+pub struct Health(u32);
+
+impl Default for Health {
+    fn default() -> Self {
+        Health(100)
+    }
+}
+
 #[derive(Component, Default)]
 pub struct Object;
 #[derive(Bundle)]
@@ -26,8 +35,8 @@ impl Default for ObjectBundle {
             mass_properties: ColliderMassProperties::Density(1.0),
             ext_impulse: ExternalImpulse::default(),
             damping: Damping {
-                linear_damping: 1.,
-                angular_damping: 1.,
+                linear_damping: 3.,
+                angular_damping: 3.,
             },
             sprite_bundle: SpriteBundle {
                 sprite: Sprite {
@@ -41,6 +50,7 @@ impl Default for ObjectBundle {
     }
 }
 impl ObjectBundle {
+    //get rid of this stupid new function and just use ..Default::default() like a normal human being
     pub fn new(pos: Vec2, size: Vec2, density: Option<f32>) -> Self {
         //optionally specify the density of the object
         let mass_prop = match density {

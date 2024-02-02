@@ -1,3 +1,4 @@
+use crate::helpers::MainCamera;
 use bevy::{
     math::Vec3Swizzles,
     prelude::*,
@@ -61,47 +62,47 @@ pub fn shoot(
 
 pub fn gun_aiming(
     mut gun_data: Query<(&mut Gun, &mut ExternalImpulse, &Transform, With<RigidBody>)>,
-    camera_q: Query<(&Camera, &GlobalTransform)>,
+    camera_q: Query<(&Camera, &GlobalTransform, With<MainCamera>)>,
     windows: Query<&Window, With<PrimaryWindow>>,
     mut ev_playeraiming: EventReader<PlayerAimingEvent>, //if the player is aiming
 ) {
     for ev in ev_playeraiming.read() {
         if ev.0 == true {
             for (mut gun, mut ext_impulse, gun_trans, _) in &mut gun_data {
-                let (camera, camera_transform) = camera_q.single();
+                if let Ok((camera, camera_transform, _)) = camera_q.get_single() {
+                    //copypaste from player aiming, all this should be a function that gets shared between these systems
+                    if let Some(mouse_world_position) = windows
+                        .single()
+                        .cursor_position()
+                        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                        .map(|ray| ray.origin.truncate())
+                    {
+                        //https://github.com/bevyengine/bevy/blob/main/examples/2d/rotation.rs for reference on the following code
+                        let gun_pos = gun_trans.translation.xy();
 
-                //copypaste from player aiming, all this should be a function that gets shared between these systems
-                if let Some(mouse_world_position) = windows
-                    .single()
-                    .cursor_position()
-                    .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                    .map(|ray| ray.origin.truncate())
-                {
-                    //https://github.com/bevyengine/bevy/blob/main/examples/2d/rotation.rs for reference on the following code
-                    let gun_pos = gun_trans.translation.xy();
+                        let gun_forward = (gun_trans.rotation * Vec3::Y).xy();
 
-                    let gun_forward = (gun_trans.rotation * Vec3::Y).xy();
+                        //vector from player to mouse
+                        let to_mouse = (mouse_world_position - gun_pos).normalize();
 
-                    //vector from player to mouse
-                    let to_mouse = (mouse_world_position - gun_pos).normalize();
+                        //get dot product between player forward vector and direction to the mouse
+                        let forward_dot_mouse = gun_forward.dot(to_mouse);
 
-                    //get dot product between player forward vector and direction to the mouse
-                    let forward_dot_mouse = gun_forward.dot(to_mouse);
+                        //if player is already facing mouse
+                        if (forward_dot_mouse - 1.0).abs() < f32::EPSILON {
+                            continue;
+                        }
 
-                    //if player is already facing mouse
-                    if (forward_dot_mouse - 1.0).abs() < f32::EPSILON {
-                        continue;
+                        //get right vector of player
+                        let gun_right = (gun_trans.rotation * Vec3::X).xy();
+
+                        //if negative, rotate CCW, if positive rotate CW
+                        let right_dot_mouse = gun_right.dot(to_mouse);
+
+                        let rotation_sign = -f32::copysign(0.0005, right_dot_mouse);
+
+                        ext_impulse.torque_impulse = rotation_sign;
                     }
-
-                    //get right vector of player
-                    let gun_right = (gun_trans.rotation * Vec3::X).xy();
-
-                    //if negative, rotate CCW, if positive rotate CW
-                    let right_dot_mouse = gun_right.dot(to_mouse);
-
-                    let rotation_sign = -f32::copysign(0.0005, right_dot_mouse);
-
-                    ext_impulse.torque_impulse = rotation_sign;
                 }
             }
         }

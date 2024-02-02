@@ -1,9 +1,9 @@
 use crate::body::organs::*;
+use crate::body::Body;
 use crate::items::cigarette;
 use crate::items::cigarette::Xuyin;
-use crate::reagents::*;
-use crate::body::Body;
 use crate::items::Item;
+use crate::reagents::*;
 use bevy::prelude::*;
 
 #[derive(Component, Default, Debug, Reflect)]
@@ -56,7 +56,7 @@ pub fn handle_mouth_use(
 #[derive(Event)]
 pub struct MouthGiveEvent {
     pub receiver: Entity, //which entity with mouth to give the item to
-    pub target: Entity, //which entity to put in the receiver's mouth
+    pub target: Entity,   //which entity to put in the receiver's mouth
 }
 
 pub fn handle_give_mouth(

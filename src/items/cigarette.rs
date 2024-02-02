@@ -14,9 +14,10 @@ pub struct Cigarette {
 impl Cigarette {
     pub fn default() -> Self {
         Cigarette {
-            container: Container {
-                holding: gen_reagents(HashMap::from([(Reagent::Nicotine, 5), (Reagent::Toxin, 5)])),
-            },
+            container: Container(gen_reagents(HashMap::from([
+                (Reagent::Nicotine, 5),
+                (Reagent::Toxin, 5),
+            ]))),
             identity: Item {
                 name: Name::new("Garloid Cigarette"),
                 desc: "Classic Garloid brand cigarette".to_string(),
@@ -25,9 +26,10 @@ impl Cigarette {
     }
     pub fn robustco() -> Self {
         Cigarette {
-            container: Container {
-                holding: gen_reagents(HashMap::from([(Reagent::Nicotine, 10), (Reagent::Toxin, 10)])),
-            },
+            container: Container(gen_reagents(HashMap::from([
+                (Reagent::Nicotine, 10),
+                (Reagent::Toxin, 10),
+            ]))),
             identity: Item {
                 name: Name::new("Robustco Cigarette"),
                 desc: "Now with added grass trimmings".to_string(),
@@ -45,31 +47,27 @@ pub struct Xuyin {
 impl Xuyin {
     pub fn default() -> Self {
         Xuyin {
-            container: Container {
-                holding: vec![Reagent::Nicotine; 5],
-            },
+            container: Container(vec![Reagent::Nicotine; 6]),
             identity: Item {
                 name: Name::new("Xuyin"),
-                desc: "Xuyin Brand Nicotine Pouch. Smells like satisfaction.".to_string(),
+                desc: "6mg Xuyin Best Pouch Produced in Hubei. Smells like satisfaction."
+                    .to_string(),
             },
         }
     }
     pub fn xuyin_xtra() -> Self {
         Xuyin {
-            container: Container {
-                holding: vec![Reagent::Nicotine; 10],
-            },
+            container: Container(vec![Reagent::Nicotine; 12]),
             identity: Item {
                 name: Name::new("Xuyin Xtra"),
-                desc: "Xuyin Xtra Nicotine Pouch. Now featuring double the fun!".to_string(),
+                desc: "12mg Xuyin Xtra Best Nicotine Pouch. Now featuring double the fun!"
+                    .to_string(),
             },
         }
     }
     pub fn xuyin_omega() -> Self {
         Xuyin {
-            container: Container {
-                holding: vec![Reagent::Nicotine; 200],
-            },
+            container: Container(vec![Reagent::Nicotine; 200]),
             identity: Item {
                 name: Name::new("Xuyin OMEGA Mode Black Alphastar"),
                 desc: "Schedule 0 controlled substance. Highly illegal worldwide.".to_string(),
